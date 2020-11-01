@@ -141,7 +141,8 @@ public class Bartok : MonoBehaviour
         phase = TurnPhase.pre;
         //CURRENT_PLAYER.TakeTurn();
         
-        Utils.tr("Bartok:PassTurn()","Old:"+lastPlayerNum,"New:"+CURRENT_PLAYER.playerNum);
+        Utils.tr("Bartok:PassTurn()","Old:"+lastPlayerNum,
+            "New:"+CURRENT_PLAYER.playerNum);
 
     }
     public bool ValidPlay(CardBartok cb)
