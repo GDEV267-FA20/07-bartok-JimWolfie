@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum TurnPhase
 {
@@ -136,6 +137,10 @@ public class Bartok : MonoBehaviour
         if(CURRENT_PLAYER !=null)
         {
             lastPlayerNum = CURRENT_PLAYER.playerNum;
+            if(CheckGameOver())
+            {
+                return;
+            }
         }
         CURRENT_PLAYER = players[num];
         phase = TurnPhase.pre;
@@ -144,6 +149,33 @@ public class Bartok : MonoBehaviour
         Utils.tr("Bartok:PassTurn()","Old:"+lastPlayerNum,
             "New:"+CURRENT_PLAYER.playerNum);
 
+    }
+    public bool CheckGameOver()
+    {
+        if(drawPile.Count == 0)
+        {
+            List<Card> cards = new List<Card>();
+            foreach(CardBartok cb in discardPile)
+            {
+                cards.Add(cb);
+            }
+            discardPile.Clear();
+            Deck.Shuffle(ref cards);
+            drawPile = UpgradeCardsList(cards);
+            ArrangeDrawPile();
+        }
+        if(CURRENT_PLAYER.hand.Count == 0)
+        {
+            phase = TurnPhase.gameOver;
+            Invoke("RestartGame",1);
+            return(true);
+        }
+        return(false);
+    }
+    public void RestartGame()
+    {
+        CURRENT_PLAYER=null;
+        SceneManager.LoadScene("__Bartok_Scene_0");
     }
     public bool ValidPlay(CardBartok cb)
     {
