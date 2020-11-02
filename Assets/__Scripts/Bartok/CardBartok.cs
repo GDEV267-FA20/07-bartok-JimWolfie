@@ -24,6 +24,9 @@ public class CardBartok : Card
 
     
     public GameObject reportFinishTo = null;
+    [System.NonSerialized]
+    public Player callbackPlayer = null;
+
 
     public void MoveTo(Vector3 ePos, Quaternion eRot)
     {
@@ -76,10 +79,11 @@ public class CardBartok : Card
                 {
                     reportFinishTo.SendMessage("CBCallback",this);
                     reportFinishTo = null;
-                } else
+                } else if(callbackPlayer!=null)
                 {
-
-                }
+                    callbackPlayer.CBCallback(this);
+                    callbackPlayer=null;
+                }else{ }
 
             }else
             {
