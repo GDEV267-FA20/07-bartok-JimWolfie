@@ -107,5 +107,10 @@ public class CardBartok : Card
             break;
         }
     }
+    public override void OnMouseUpAsButton()
+    {
+        Bartok.S.CardClicked(this);
+        base.OnMouseUpAsButton();
+    }
 
 }
