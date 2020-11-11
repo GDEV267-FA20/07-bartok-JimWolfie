@@ -80,7 +80,8 @@ public class Player
     {
         CardBartok cb;
         //Utils.tr("Player.TakeTurn");
-        
+        SkipTurn(Bartok.S.skipState);
+
         if(type == PlayerType.human)return;
 
         Bartok.S.phase = TurnPhase.waiting;
@@ -106,9 +107,34 @@ public class Player
         
         cb.callbackPlayer = this;
     }
+    public void SkipTurn(SkipType state)
+    {
+
+        
+    }
     public void CBCallback(CardBartok tCB)
     {
         //Utils.tr("Player.CBCallback()",tCB.name,"Player"+playerNum);
-        Bartok.S.PassTurn();
+        switch(Bartok.S.skipState)
+        {
+            case SkipType.too:
+            Utils.tr("too was played");
+            Bartok.S.skipState = SkipType.tooSkipped;
+            Bartok.S.PassTurn();
+            return;
+
+            case SkipType.tooSkipped:
+            Utils.tr("tooskipped was completed");
+            Bartok.S.skipState = SkipType.none;
+            Bartok.S.PassTurn();
+            return;
+
+            case SkipType.none:
+            Utils.tr("none to be");
+            Bartok.S.skipState = SkipType.none;
+            Bartok.S.PassTurn();
+            return;
+        }
+        
     }
 }

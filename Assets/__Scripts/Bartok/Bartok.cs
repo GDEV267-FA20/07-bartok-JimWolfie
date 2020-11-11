@@ -11,6 +11,14 @@ public enum TurnPhase
     post,
     gameOver
 }
+public enum SkipType
+{
+    none,
+    too,
+    tooSkipped,
+    match,
+    matchSkipped,
+}
 public class Bartok : MonoBehaviour
 {
     static public Bartok S;
@@ -31,7 +39,9 @@ public class Bartok : MonoBehaviour
     public List<Player> players;
     public CardBartok targetCard;
     public TurnPhase phase = TurnPhase.idle;
-    public bool flag2;
+    public SkipType skipState= SkipType.none;
+    public bool firstTurn;
+
 
     private BartokLayout layout;
     private Transform layoutAnchor;
@@ -124,6 +134,7 @@ public class Bartok : MonoBehaviour
     {
         Debug.Log(players.IndexOf(CURRENT_PLAYER));
         PassTurn(1);
+       
     }
 
     public void PassTurn(int num=-1)
@@ -152,6 +163,8 @@ public class Bartok : MonoBehaviour
             //"New:"+CURRENT_PLAYER.playerNum);
 
     }
+
+    
     public bool CheckGameOver()
     {
         if(drawPile.Count == 0)
@@ -188,6 +201,10 @@ public class Bartok : MonoBehaviour
 
     public CardBartok MoveToTarget(CardBartok tCB)
     {
+        if(tCB.rank == 2)
+        {
+            skipState = SkipType.too;
+        }
         tCB.timeStart=0;
         tCB.MoveTo(layout.discardPile.pos+Vector3.back);
         tCB.state = CBState.toTarget;
@@ -199,21 +216,10 @@ public class Bartok : MonoBehaviour
             MoveToDiscard(targetCard);
         }
         targetCard = tCB;
-        if(targetCard.rank == 2)
-        {
-            if(CURRENT_PLAYER.type == PlayerType.human)
-            {
-                print("hello");
-            }
-            if(CURRENT_PLAYER.type == PlayerType.ai)
-            {
-                print("I AM A MACHINE");
-            }
-
-
-        }
+        
         return tCB;
     }
+    
     public CardBartok MoveToDiscard(CardBartok tCB)
     {
         tCB.state = CBState.discard;
