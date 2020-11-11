@@ -78,17 +78,20 @@ public class Player
     }
     public void TakeTurn()
     {
-        Utils.tr("Player.TakeTurn");
+        CardBartok cb;
+        //Utils.tr("Player.TakeTurn");
+        
         if(type == PlayerType.human)return;
 
         Bartok.S.phase = TurnPhase.waiting;
-        CardBartok cb;
+        
         List<CardBartok>validCards = new List<CardBartok>();
         foreach(CardBartok tCB in hand)
         {
             if(Bartok.S.ValidPlay(tCB))
             {
                 validCards.Add(tCB);
+
             }
         }
         if(validCards.Count==0)
@@ -100,11 +103,12 @@ public class Player
         cb = validCards[Random.Range(0, validCards.Count)];
         RemoveCard(cb);
         Bartok.S.MoveToTarget(cb);
+        
         cb.callbackPlayer = this;
     }
     public void CBCallback(CardBartok tCB)
     {
-        Utils.tr("Player.CBCallback()",tCB.name,"Player"+playerNum);
+        //Utils.tr("Player.CBCallback()",tCB.name,"Player"+playerNum);
         Bartok.S.PassTurn();
     }
 }

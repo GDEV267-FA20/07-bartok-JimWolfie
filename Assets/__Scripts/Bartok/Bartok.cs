@@ -31,7 +31,7 @@ public class Bartok : MonoBehaviour
     public List<Player> players;
     public CardBartok targetCard;
     public TurnPhase phase = TurnPhase.idle;
-    
+    public bool flag2;
 
     private BartokLayout layout;
     private Transform layoutAnchor;
@@ -116,7 +116,7 @@ public class Bartok : MonoBehaviour
     }
     public void CBCallback(CardBartok cb)
     {
-        Utils.tr("Bartok:CBCallback()",cb.name);
+        //Utils.tr("Bartok:CBCallback()",cb.name);
         StartGame();
     }
     
@@ -128,8 +128,10 @@ public class Bartok : MonoBehaviour
 
     public void PassTurn(int num=-1)
     {
+        
         if(num ==-1)
         {
+            
             int ndx = players.IndexOf(CURRENT_PLAYER);
             num = (ndx+1)%4;
         }
@@ -146,8 +148,8 @@ public class Bartok : MonoBehaviour
         phase = TurnPhase.pre;
         CURRENT_PLAYER.TakeTurn();
         
-        Utils.tr("Bartok:PassTurn()","Old:"+lastPlayerNum,
-            "New:"+CURRENT_PLAYER.playerNum);
+        //Utils.tr("Bartok:PassTurn()","Old:"+lastPlayerNum,
+            //"New:"+CURRENT_PLAYER.playerNum);
 
     }
     public bool CheckGameOver()
@@ -197,6 +199,19 @@ public class Bartok : MonoBehaviour
             MoveToDiscard(targetCard);
         }
         targetCard = tCB;
+        if(targetCard.rank == 2)
+        {
+            if(CURRENT_PLAYER.type == PlayerType.human)
+            {
+                print("hello");
+            }
+            if(CURRENT_PLAYER.type == PlayerType.ai)
+            {
+                print("I AM A MACHINE");
+            }
+
+
+        }
         return tCB;
     }
     public CardBartok MoveToDiscard(CardBartok tCB)
@@ -210,6 +225,8 @@ public class Bartok : MonoBehaviour
     }
     public CardBartok Draw()
     {
+        
+
         CardBartok cd = drawPile[0];
         if(drawPile.Count == 0)
         {
@@ -243,13 +260,13 @@ public class Bartok : MonoBehaviour
     {
         if(CURRENT_PLAYER.type!=PlayerType.human)return;
         if(phase == TurnPhase.waiting)return;
-
+        
         switch(tCB.state)
         {
             case CBState.drawpile:
                 CardBartok cb = CURRENT_PLAYER.AddCArd(Draw());
                 cb.callbackPlayer = CURRENT_PLAYER;
-                Utils.tr("Bartok:Cardclicked()","Draw",cb.name);
+                //Utils.tr("Bartok:Cardclicked()","Draw",cb.name);
                 phase = TurnPhase.waiting;
                 break;
             case CBState.hand:
@@ -258,13 +275,14 @@ public class Bartok : MonoBehaviour
                     CURRENT_PLAYER.RemoveCard(tCB);
                     MoveToTarget(tCB);
                     tCB.callbackPlayer=CURRENT_PLAYER;
-                    Utils.tr("Bartok:CardClicked()","Play",tCB.name,
-                        targetCard.name+"is target");
+                    //Utils.tr("Bartok:CardClicked()","Play",tCB.name,
+                        //targetCard.name+"is target");
+                
                     phase = TurnPhase.waiting;
                 } else
                 {
-                    Utils.tr("Bartok:CardClicked","Attempted to play",
-                        tCB.name,targetCard+"nameis");
+                    //Utils.tr("Bartok:CardClicked","Attempted to play",
+                        //tCB.name,targetCard+"nameis");
 
                 }
                 break;
