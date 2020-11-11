@@ -201,10 +201,7 @@ public class Bartok : MonoBehaviour
 
     public CardBartok MoveToTarget(CardBartok tCB)
     {
-        if(tCB.rank == 2)
-        {
-            skipState = SkipType.too;
-        }
+       
         tCB.timeStart=0;
         tCB.MoveTo(layout.discardPile.pos+Vector3.back);
         tCB.state = CBState.toTarget;
@@ -278,7 +275,12 @@ public class Bartok : MonoBehaviour
             case CBState.hand:
                 if(ValidPlay(tCB))
                     {
+                    if(tCB.rank ==2)
+                    {
+                    skipState = SkipType.too;
+                    }
                     CURRENT_PLAYER.RemoveCard(tCB);
+                    
                     MoveToTarget(tCB);
                     tCB.callbackPlayer=CURRENT_PLAYER;
                     //Utils.tr("Bartok:CardClicked()","Play",tCB.name,

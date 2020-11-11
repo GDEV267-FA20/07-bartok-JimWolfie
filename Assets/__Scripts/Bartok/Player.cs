@@ -22,7 +22,7 @@ public class Player
         if(type == PlayerType.human)
         {
             CardBartok[] cards = hand.ToArray();
-            cards = cards.OrderBy(cd=> cd.rank).ToArray();
+            cards = cards.OrderBy(cd=> cd.suit).ToArray();
             hand = new List<CardBartok>(cards);
         }
         eCB.SetSortingLayerName("10");
@@ -80,22 +80,26 @@ public class Player
     {
         //cannot leave take turn, we are altering turn behavior when skippin
         //if we call pass turn in the skip turn thing, we run into issues where
-        //an extra turn might be generated becasue we eventually return to take turn
-        //was getting behavior similar to that so we might as well avoid that issue
+        //pass turn is called on the animation's finishing. meaning we need to make sure 
+        //there's a buffer.
+        
         CardBartok cb;
         switch(Bartok.S.skipState)
         {
             case SkipType.too:
                 Utils.tr("too was played");
-                Bartok.S.skipState = SkipType.none;
-                //the thing that sets this is CB callback, because 
-                //it only deals with cards played after they've played. 
-                return;
+                Bartok.S.phase = TurnPhase.waiting;
+                cb = AddCArd(Bartok.S.Draw());
+                cb.callbackPlayer = this;
+                cb = AddCArd(Bartok.S.Draw());
+                cb.callbackPlayer = this;
+
+            return;
 
             case SkipType.none:
                 //if no skip we just take turn as normal. 
                 Utils.tr("none to be");
-                Bartok.S.skipState = SkipType.none;
+                
 
                 if(type == PlayerType.human)return;
 
@@ -116,7 +120,12 @@ public class Player
                     cb.callbackPlayer = this;
                     return;
                 }
+                
                 cb = validCards[Random.Range(0, validCards.Count)];
+                if(cb.rank == 2)
+                {
+                    Bartok.S.skipState = SkipType.too;
+                }
                 RemoveCard(cb);
                 Bartok.S.MoveToTarget(cb);
 
@@ -127,9 +136,38 @@ public class Player
  
     public void CBCallback(CardBartok tCB)
     {
-        //oaky so this fires if a card is played. this is not where skipping occurs
-        //Utils.tr("Player.CBCallback()",tCB.name,"Player"+playerNum);
+        //oaky so this fires if a card is moved and fires when a card completes an animatioin
+
+        //draw fires this
+        //move to target fires
+        //we are changing the skip state here because 
+        //pass turn handles the turn taking
+        //if none to be skipped, we don't skip
+        //if we draw, and it too, we set it to tooskipped, but don't pass
+        //there is another cbcallback soon, so we will update there.
+        //if tooSkipped, we pass turn and update the state back to none. 
         
-        Bartok.S.PassTurn();
-    }
+        Utils.tr("Player.CBCallback()",Bartok.S.skipState, playerNum);
+        
+        
+        if(Bartok.S.skipState == SkipType.tooSkipped)
+        {
+            Bartok.S.skipState = SkipType.none;
+            
+
+        }
+        else if(Bartok.S.skipState==SkipType.too)
+        {
+            //we enter here from being played this has to fire
+            
+            Bartok.S.skipState = SkipType.tooSkipped;
+            Bartok.S.PassTurn();
+        }
+        else
+        {
+            Bartok.S.PassTurn();
+            
+        }
+
+    } 
 }
