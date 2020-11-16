@@ -153,20 +153,23 @@ public class Player
         if(Bartok.S.skipState == SkipType.tooSkipped)
         {
             Bartok.S.skipState = SkipType.none;
-            
+            Utils.tr("hello11111");
 
         }
-        else if(Bartok.S.skipState==SkipType.too)
+        
+        if(Bartok.S.skipState == SkipType.none)
+        {
+            Bartok.S.PassTurn();
+            Utils.tr("hello2222222");
+        }
+        if(Bartok.S.skipState==SkipType.too)
         {
             //we enter here from being played this has to fire
+
             
+            Bartok.S.PassTurn();
             Bartok.S.skipState = SkipType.tooSkipped;
-            Bartok.S.PassTurn();
-        }
-        else
-        {
-            Bartok.S.PassTurn();
-            
+            Utils.tr("hello33333333");
         }
 
     } 
